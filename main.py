@@ -98,9 +98,10 @@ def main():
         next_update = (datetime.datetime.now() + datetime.timedelta(seconds=config['delay'])).strftime('%I:%M%p, %m-%d-%y')
         if float(node_etcpow_tokens) >= 100:
             embed = create_embed_withdraw_ready(config, mined_value, node_etcpow_tokens, data, next_update)
+            post_message_to_discord(embed, mined_value, config['fiat'], config['discordWebhook'], config['discord_user_id'])  # Add user_id here
         else:
             embed = create_embed_current_balance(config, mined_value, node_etcpow_tokens, remaining_tokens, data, withdraw_date, next_update)
-        post_message_to_discord(embed, mined_value, config['fiat'], config['discordWebhook'], config['discord_user_id'])
+            post_message_to_discord(embed, mined_value, config['fiat'], config['discordWebhook'])
         time.sleep(config["delay"])
 
 def get_config():
