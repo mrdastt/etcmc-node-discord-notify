@@ -2,7 +2,6 @@ import datetime
 import json
 import os.path
 import time
-
 import easyocr
 import pyautogui
 import requests
@@ -43,8 +42,9 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 ###################################################################################################################################################
 
 
-def post_message_to_discord(embed, mined_value, fiat, webhook_url):
-    webhook = DiscordWebhook(url=webhook_url)
+def post_message_to_discord(embed, mined_value, fiat, webhook_url, user_id=None):
+    content = f"<@{user_id}>" if user_id else ""
+    webhook = DiscordWebhook(url=webhook_url, content=content)
     with open("./cropped.png", "rb") as f:
         webhook.add_file(file=f.read(), filename=f"{mined_value}_{fiat}.png")
     embed.set_image(url=f"attachment://{mined_value}_{fiat}.png")
@@ -87,7 +87,9 @@ def main():
     config = get_config()
     embed = DiscordEmbed(title=f"Monitoring Node Status", color=0xFFA500, description=f"Balance updates will be sent every {config['delay']/3600} hours")
     embed.set_author(name=f"{config['node_name'].upper()} ✅", url="https://www.coingecko.com/en/coins/etcpow", icon_url="https://images.squarespace-cdn.com/content/v1/64189e78e28fe362e04402a3/4acfcefe-68b5-444f-9ac7-b7ee4392ceb3/ETCMC_LOGO-removebg-preview.png")
-    DiscordWebhook(url=config['discordWebhook']).add_embed(embed).execute()
+    webhook = DiscordWebhook(url=config['discordWebhook'])
+    webhook.add_embed(embed)
+    webhook.execute()
     while True:
         node_etcpow_tokens = get_balance()
         withdraw_date, remaining_tokens = get_withdraw_estimate(node_etcpow_tokens, config['estimated_daily_earnings'])
@@ -97,7 +99,7 @@ def main():
             embed = create_embed_withdraw_ready(config, mined_value, node_etcpow_tokens, data, next_update)
         else:
             embed = create_embed_current_balance(config, mined_value, node_etcpow_tokens, remaining_tokens, data, withdraw_date, next_update)
-        post_message_to_discord(embed, mined_value, config['fiat'], config['discordWebhook'])
+        post_message_to_discord(embed, mined_value, config['fiat'], config['discordWebhook'], config['discord_user_id'])
         time.sleep(config["delay"])
 
 def get_config():
@@ -119,6 +121,7 @@ def create_config():
     config["node_name"] = input("Enter a name for your node:")
     config["discordWebhook"] = input("Enter the link of discord webhook : ")
     config['estimated_daily_earnings'] = float(input("Enter the estimated daily ETCPOW Token earnings (Example: 8.2): "))
+    config['discord_user_id'] = input("Enter your Discord User ID for @ pings (optional): ") or None
     curr_delay = 0
     while curr_delay == 0:
         try:
@@ -136,7 +139,7 @@ def create_embed_withdraw_ready(config, mined_value, node_etcpow_tokens, data, n
     embed.set_author(name=f"{config['node_name'].upper()} 💰", url="https://www.coingecko.com/en/coins/etcpow", icon_url="https://images.squarespace-cdn.com/content/v1/64189e78e28fe362e04402a3/4acfcefe-68b5-444f-9ac7-b7ee4392ceb3/ETCMC_LOGO-removebg-preview.png")
     embed.add_embed_field(name="ETCPOW Tokens", value=f"**{node_etcpow_tokens}**", inline=True)
     embed.add_embed_field(name="Token Price", value=f"**{data[config['fiat']]} {config['fiat'].upper()}**", inline=True)
-    embed.add_embed_field(name="Trading Volume", value=f"{data['usd_24h_vol']} {config['fiat'].upper()}", inline=True)
+    embed.add_embed_field(name="Trading Volume", value=f"{data['usd_24h_vol']:,.2f} {config['fiat'].upper()}", inline=True)
     embed.add_embed_field(name="Total Value", value=f"**{mined_value} {config['fiat'].upper()}**", inline=True)
     embed.add_embed_field(name="Next Update:", value=f"{next_update}", inline=True)
     return embed
@@ -148,7 +151,7 @@ def create_embed_current_balance(config, mined_value, node_etcpow_tokens, remain
     embed.add_embed_field(name="Remaining Tokens:", value=f"**{remaining_tokens}**", inline=True)
     embed.add_embed_field(name="Token Price:", value=f"**{data[config['fiat']]} {config['fiat'].upper()}**", inline=True)
     embed.add_embed_field(name="24h Change:", value=f"**{data['usd_24h_change']:.2f}%**", inline=True)
-    embed.add_embed_field(name="Trading Volume:", value=f"{data['usd_24h_vol']} {config['fiat'].upper()}")
+    embed.add_embed_field(name="Trading Volume:", value=f"{data['usd_24h_vol']:,.2f} {config['fiat'].upper()}")
     embed.add_embed_field(name="Market Cap:", value=f"{data['usd_market_cap']} {config['fiat'].upper()}", inline=True)
     embed.add_embed_field(name="~Estimated Withdraw:", value=f"{withdraw_date}", inline=True)
     embed.add_embed_field(name="Next Update:", value=f"{next_update}", inline=True)
