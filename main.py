@@ -88,6 +88,7 @@ def main():
     embed = DiscordEmbed(title=f"Monitoring Node Status", color=0xFFA500, description=f"Balance updates will be sent every {config['delay']/3600} hours")
     embed.set_author(name=f"{config['node_name'].upper()} ✅", url="https://www.coingecko.com/en/coins/etcpow", icon_url="https://images.squarespace-cdn.com/content/v1/64189e78e28fe362e04402a3/4acfcefe-68b5-444f-9ac7-b7ee4392ceb3/ETCMC_LOGO-removebg-preview.png")
     webhook = DiscordWebhook(url=config['discordWebhook'])
+    embed.add_embed_field(name="Estimated Daily Earnings:", value=f"{config['estimated_daily_earnings']} ETCPOW Tokens", inline=True)
     webhook.add_embed(embed)
     webhook.execute()
     while True:

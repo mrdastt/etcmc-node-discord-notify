@@ -4,11 +4,11 @@ Import-Module $env:ChocolateyInstall\helpers\chocolateyProfile.psm1
 refreshenv
 
 # Install Python 3.11 via Chocolatey
-choco install python --version=3.11.0
+choco install python --version=3.11.0 -y
 refreshenv
 
 # Install Git
-choco install git
+choco install git -y
 refreshenv
 
 # Clone the project
@@ -20,3 +20,6 @@ cd .\etcmc-node-discord-notify
 # Install the project requirements
 pip install -r requirements.txt
 refreshenv
+
+# echo to terminal "Open the folder cloned and click run.bat to start!"
+echo "Open the folder cloned and click run.bat to start!"
