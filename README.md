@@ -65,9 +65,9 @@ You will be prompted when you first run the script to enter these values, or you
 - `estimated_daily_earnings`: The estimated daily earnings of the node.
 
 ## Example Messages:
-![image](https://github.com/mrdastt/etcmc-node-discord-notify/assets/16753981/f40a2726-a56a-4186-84c1-f4e85df070f9)
-![image](https://github.com/mrdastt/etcmc-node-discord-notify/assets/16753981/b58e9fce-ba23-4252-97a7-eab0fb198f07)
-![image](https://github.com/mrdastt/etcmc-node-discord-notify/assets/16753981/a9e1afeb-cd83-4f72-a562-a5f10a1633c7)
+![image](https://github.com/mrdastt/etcmc-node-discord-notify/assets/16753981/793a5706-fc75-4be9-b8f9-3c9c8e814e0b)
+
+
 
 
 ## Support 🍵
