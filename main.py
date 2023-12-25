@@ -62,7 +62,7 @@ def get_balance():
         cropped_image.save("cropped.png")
         results = reader.readtext("./cropped.png")
         ocr_text = " ".join([result[1] for result in results])
-        balance_text = ocr_text.strip().replace("ETCPOW Balance: ", "")
+        balance_text = ocr_text.strip().replace("ETCPOW Balance: ", "").replace("ETCPOW Balance:", "").replace("~", "") 
         try:
             balance = float(balance_text)
             is_floatable = True
